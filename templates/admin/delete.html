@@ -1,0 +1,3 @@
+{% extends 'admin/base.html' %}
+{% from 'macros.html' import csrf with context %}
+{% block workspace %}<section class="panel account-width"><p class="eyebrow">Confirm this action</p><h2 dir="auto">Delete “{{ item_name }}”?</h2><p>{% if kind=='user' %}This account will lose access immediately, including its active sessions.{% else %}This permanently removes the item and its attached files.{% endif %}</p><form method="post" class="row-actions">{{ csrf() }}<button class="danger">Delete permanently</button><a class="button secondary" href="{{ url_for('staff.admin',section=section) }}">Cancel</a></form></section>{% endblock %}

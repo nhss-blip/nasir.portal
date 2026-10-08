@@ -1,0 +1,25 @@
+{% macro csrf() %}<input type="hidden" name="csrf" value="{{ tok }}">{% endmacro %}
+{% macro pager(pg,pages) %}
+{% if pages>1 %}<nav class="pager" aria-label="Pagination">
+{% if pg>1 %}<a class="button secondary" href="{{ query_url(page=pg-1,edit=None) }}">Previous</a>{% endif %}
+<span aria-live="polite">Page {{ pg }} of {{ pages }}</span>
+{% if pg<pages %}<a class="button secondary" href="{{ query_url(page=pg+1,edit=None) }}">Next</a>{% endif %}
+</nav>{% endif %}
+{% endmacro %}
+{% macro tile(issue,magazine) %}
+<a class="issue" href="{{ url_for('public.pdf',i=issue.id) }}" target="_blank" rel="noopener">
+  <div class="cover">{% if issue.cover %}<img src="{{ url_for('public.cover',i=issue.id) }}" loading="lazy" alt="">{% else %}<span>{{ magazine.name[:1] }}</span>{% endif %}</div>
+  <strong dir="auto" lang="{{ issue.title|content_language }}">{{ issue.title }}</strong><span class="muted">{{ issue.issue_date }} · PDF, opens in a new tab</span>
+</a>
+{% endmacro %}
+{% macro post_card(post,attachments,detail=False) %}
+<article class="panel post" id="post-{{ post.id }}">
+  <div class="metadata">{% if post.pinned %}<span class="badge gold">Pinned</span>{% endif %}<span class="badge {% if post.category=='Urgent' %}urgent{% endif %}">{{ post.category }}</span><time datetime="{{ post.created[:10] }}">{{ post.created[:10] }}</time></div>
+  {% if detail %}<h1 dir="auto" lang="{{ post.title|content_language }}">{{ post.title }}</h1>{% else %}<h2 dir="auto" lang="{{ post.title|content_language }}"><a href="{{ url_for('public.announcement',identifier=post.id) }}">{{ post.title }}</a></h2>{% endif %}
+  <p class="post-body" dir="auto" lang="{{ post.body|content_language }}">{{ post.body }}</p>
+  {% if attachments.get(post.id) %}<div class="attachments">{% for item in attachments[post.id] %}
+    {% if item.kind=='img' %}<a href="{{ url_for('public.attachment',i=item.id) }}" target="_blank" rel="noopener"><img src="{{ url_for('public.attachment',i=item.id) }}" alt="{{ item.name }}" loading="lazy"><span class="sr-only">Opens in a new tab</span></a>
+    {% else %}<a class="button secondary file-link" href="{{ url_for('public.attachment',i=item.id) }}" target="_blank" rel="noopener">PDF · {{ item.name }}<span class="sr-only"> · Opens in a new tab</span></a>{% endif %}
+  {% endfor %}</div>{% endif %}
+</article>
+{% endmacro %}

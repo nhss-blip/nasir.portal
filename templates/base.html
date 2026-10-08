@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · Nasir School</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+  <script src="{{ url_for('static', filename='portal.js') }}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('public.home') }}">
+      <img src="{{ url_for('public.images', f=logo) }}" width="62" height="62" alt="Nasir Higher Secondary School crest">
+      <span>Nasir Higher Secondary School<small>School services</small></span>
+    </a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="{{ url_for('public.home') }}" {% if request.endpoint=='public.home' %}aria-current="page"{% endif %}>Home</a>
+      <a href="{{ url_for('public.announcements') }}" {% if request.endpoint in ['public.announcements','public.announcement'] %}aria-current="page"{% endif %}>Announcements</a>
+      <a href="{{ url_for('public.magazines') }}" {% if request.endpoint=='public.magazines' %}aria-current="page"{% endif %}>Magazines</a>
+      {% if user %}
+      <a href="{{ url_for('staff.admin') }}" {% if request.blueprint=='staff' %}aria-current="page"{% endif %}>Publishing</a>
+      <form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf" value="{{ tok }}"><button class="button secondary">Sign out</button></form>
+      {% else %}<a href="{{ url_for('auth.login') }}" {% if request.endpoint=='auth.login' %}aria-current="page"{% endif %}>Staff sign-in</a>{% endif %}
+    </nav>
+  </header>
+  <main id="main" class="page" tabindex="-1">
+    {% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}
+    <div class="notice {{ category }}" role="{% if category=='error' %}alert{% else %}status{% endif %}">{{ message }}</div>
+    {% endfor %}{% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">Nasir School · Learning, information and everyday services</footer>
+</body>
+</html>

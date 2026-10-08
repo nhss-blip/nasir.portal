@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><p class="eyebrow">Find something at school</p><h1>Search school content</h1></div>
+<form class="panel search-form" action="{{ url_for('public.search') }}" role="search"><label for="content-search">Search announcements and magazines</label><div class="search-row"><input id="content-search" type="search" name="q" value="{{ q }}" maxlength="200"><button>Search</button></div></form>
+{% if q %}<p class="muted" role="status">Results for “{{ q }}”</p>
+<div class="search-results"><section class="panel"><div class="section-heading"><h2>Announcements</h2><a href="{{ url_for('public.announcements',q=q) }}">Search all announcements →</a></div>
+{% for post in posts %}<article class="list-row"><div><a dir="auto" href="{{ url_for('public.announcement',identifier=post.id) }}">{{ post.title }}</a><p class="muted">{{ post.created[:10] }} · {{ post.category }}</p></div></article>{% else %}<p>No matching announcements.</p>{% endfor %}</section>
+<section class="panel"><h2>Magazine issues</h2>{% for issue in issues %}<article class="list-row"><div><a dir="auto" href="{{ url_for('public.pdf',i=issue.id) }}" target="_blank" rel="noopener">{{ issue.title }}<span class="sr-only"> · PDF, opens in a new tab</span></a><p class="muted">{{ issue.magazine_name }} · {{ issue.issue_date }}</p></div></article>{% else %}<p>No matching magazine issues.</p>{% endfor %}</section></div>
+{% else %}<p class="panel">Enter a title or keyword to search school announcements and magazine issues.</p>{% endif %}
+{% endblock %}

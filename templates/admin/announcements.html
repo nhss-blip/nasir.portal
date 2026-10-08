@@ -1,0 +1,21 @@
+{% extends 'admin/base.html' %}
+{% from 'macros.html' import csrf,pager with context %}
+{% block workspace %}
+<div class="workspace-grid">
+<section class="panel"><div class="section-heading"><h2>{{ 'Edit announcement' if edit else 'New announcement' }}</h2>{% if edit %}<a href="{{ url_for('staff.admin') }}">Cancel edit</a>{% endif %}</div>
+<form class="form-stack" action="{{ url_for('staff.save_post') }}" method="post" enctype="multipart/form-data" data-draft-warning data-upload-form>{{ csrf() }}{% if edit %}<input type="hidden" name="id" value="{{ edit.id }}">{% endif %}
+<div><label for="post-title">Title</label><input id="post-title" name="title" value="{{ draft.get('title','') if draft.get is defined else draft.title }}" dir="auto" maxlength="150" required></div>
+<div><label for="post-body">Message</label><textarea id="post-body" name="body" dir="auto" rows="6" maxlength="5000" aria-describedby="message-help" required>{{ draft.get('body','') if draft.get is defined else draft.body }}</textarea><p class="field-help" id="message-help">Write in Urdu or English.</p></div>
+<div class="field-grid"><div><label for="post-category">Category</label><select id="post-category" name="category">{% for category in cats %}<option {% if draft.category==category %}selected{% endif %}>{{ category }}</option>{% endfor %}</select></div>
+<div><label for="post-expires">Hide after <span class="muted">(optional)</span></label><input id="post-expires" type="date" name="expires" value="{{ draft.expires or '' }}"><p class="field-help">The notice stays visible through this date.</p></div></div>
+<div><label for="post-files">Attachments <span class="muted">(optional)</span></label><input id="post-files" type="file" name="files" multiple accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" aria-describedby="attachment-help"><p class="field-help" id="attachment-help">Up to 6 valid images or PDFs. Total upload limit: 80 MB.</p></div>
+{% if edit_attachments %}<fieldset><legend>Existing attachments</legend>{% for attachment in edit_attachments %}<label class="checkbox-label"><input type="checkbox" name="remove" value="{{ attachment.id }}">Remove {{ attachment.name }}</label>{% endfor %}</fieldset>{% endif %}
+<label class="checkbox-label"><input type="checkbox" name="pinned" {% if draft.pinned %}checked{% endif %}>Pin this announcement</label>
+<button>{{ 'Save changes' if edit else 'Publish announcement' }}</button><p class="upload-status field-help" role="status" hidden></p>
+</form></section>
+<section class="panel"><h2>Manage announcements</h2><form class="search-form" action="{{ url_for('staff.admin') }}" role="search"><input type="hidden" name="section" value="announcements"><label for="manage-post-search">Find an announcement</label><div class="search-row"><input id="manage-post-search" type="search" name="q" value="{{ q }}" maxlength="200"><button>Search</button></div>{% if q %}<a href="{{ url_for('staff.admin',section='announcements') }}">Clear search</a>{% endif %}</form>
+<p class="muted" role="status">{{ count }} announcement{{ '' if count==1 else 's' }}</p>
+{% for post in posts %}<article class="list-row"><div><h3 dir="auto">{{ post.title }}</h3><p class="muted">{{ post.created[:10] }}{% if post.pinned %} · Pinned{% endif %}{% if post.expires and post.expires<today %} · Expired{% endif %}</p></div><div class="row-actions"><a class="button secondary" href="{{ url_for('staff.admin',edit=post.id) }}">Edit<span class="sr-only"> {{ post.title }}</span></a><a class="button secondary danger" href="{{ url_for('staff.delete',kind='post',i=post.id) }}">Delete<span class="sr-only"> {{ post.title }}</span></a></div></article>{% else %}<p>{{ 'No announcements match your search.' if q else 'No announcements published yet.' }}</p>{% endfor %}
+{{ pager(pg,pages) }}</section>
+</div>
+{% endblock %}

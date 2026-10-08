@@ -1,0 +1,13 @@
+{% extends 'admin/base.html' %}
+{% from 'macros.html' import csrf,pager with context %}
+{% block workspace %}<div class="workspace-grid">
+<section class="panel"><h2>Upload a magazine issue</h2><form class="form-stack" method="post" action="{{ url_for('staff.upload') }}" enctype="multipart/form-data" data-draft-warning data-upload-form>{{ csrf() }}
+<div><label for="issue-magazine">Magazine</label><select id="issue-magazine" name="mag" required>{% for magazine in magazines %}<option value="{{ magazine.id }}" {% if draft.mag|string==magazine.id|string %}selected{% endif %}>{{ magazine.name }}</option>{% endfor %}</select></div>
+<div><label for="issue-title">Issue title <span class="muted">(optional)</span></label><input id="issue-title" name="title" value="{{ draft.title or '' }}" dir="auto" maxlength="120" placeholder="For example, March 2026"><p class="field-help">If blank, the PDF filename becomes the title.</p></div>
+<div><label for="issue-date">Issue date</label><input id="issue-date" type="date" name="date" value="{{ draft.date or today }}" required></div>
+<div><label for="issue-file">PDF file</label><input id="issue-file" type="file" name="pdf" accept="application/pdf,.pdf" required aria-describedby="pdf-help"><p class="field-help" id="pdf-help">Choose a readable, unencrypted PDF. Total upload limit: 80 MB.</p></div>
+<button>Upload issue</button><p class="upload-status field-help" role="status" hidden></p>
+</form></section>
+<section class="panel"><h2>Manage magazine issues</h2><form class="search-form" action="{{ url_for('staff.admin') }}" role="search"><input type="hidden" name="section" value="issues"><label for="manage-issue-search">Find an issue or magazine</label><div class="search-row"><input id="manage-issue-search" type="search" name="q" value="{{ q }}" maxlength="200"><button>Search</button></div>{% if q %}<a href="{{ url_for('staff.admin',section='issues') }}">Clear search</a>{% endif %}</form><p class="muted" role="status">{{ count }} issue{{ '' if count==1 else 's' }}</p>
+{% for issue in issues %}<article class="list-row"><div><h3 dir="auto"><a href="{{ url_for('public.pdf',i=issue.id) }}" target="_blank" rel="noopener">{{ issue.title }}<span class="sr-only"> · Opens PDF in a new tab</span></a></h3><p class="muted">{{ issue.magazine_name }} · {{ issue.issue_date }}</p></div><a class="button secondary danger" href="{{ url_for('staff.delete',kind='issue',i=issue.id) }}">Delete<span class="sr-only"> {{ issue.title }}</span></a></article>{% else %}<p>{{ 'No issues match your search.' if q else 'No magazine issues uploaded yet.' }}</p>{% endfor %}{{ pager(pg,pages) }}</section>
+</div>{% endblock %}

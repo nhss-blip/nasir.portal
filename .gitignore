@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+data/
+uploads/
+test-runtime/
+images/original/
+images/logo.webp
+.coverage
+htmlcov/
+test-results/

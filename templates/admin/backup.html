@@ -1,0 +1,3 @@
+{% extends 'admin/base.html' %}
+{% block workspace %}<section class="panel"><h2>Download a backup</h2><p>Includes the school database and uploaded files. Keep the archive in a secure location.</p><a class="button" href="{{ url_for('staff.backup') }}">Download backup ZIP</a></section>
+<section class="panel"><h2>Recent activity</h2>{% for item in audit %}<article class="list-row"><div><h3>{{ item.action }}</h3><p>{{ item.detail }}</p><p class="muted">{{ item.ts }} · {{ item.user }}</p></div></article>{% else %}<p>No activity recorded yet.</p>{% endfor %}</section>{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><p class="eyebrow">School publishing</p><h1>{{ title }}</h1><p class="muted">Signed in as {{ user.username }} · {{ user.role }}</p></div>
+<nav class="workspace-nav" aria-label="Publishing sections">
+{% for key,label in sections.items() %}{% if user.role=='admin' or key in ['announcements','issues','account'] %}<a href="{{ url_for('staff.admin',section=key) }}" {% if section==key %}aria-current="page"{% endif %}>{{ label }}</a>{% endif %}{% endfor %}
+</nav>
+{% if form_error %}<div class="notice error" role="alert">{{ form_error }} Your entered text has been kept. Choose attachments again before submitting.</div>{% endif %}
+{% block workspace %}{% endblock %}
+{% endblock %}

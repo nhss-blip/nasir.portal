@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import pager,post_card with context %}
+{% block content %}
+<div class="page-heading"><p class="eyebrow">School news</p><h1>Announcements</h1><p class="muted">Important notices, dates and updates.</p></div>
+<div class="reading-layout">
+  <aside class="filters panel" aria-label="Announcement filters">
+    <form class="search-form" action="{{ url_for('public.announcements') }}" role="search">
+      <label for="announcement-search">Search announcements</label><input id="announcement-search" type="search" name="q" value="{{ q }}" maxlength="200">
+      <input type="hidden" name="cat" value="{{ cat }}"><button>Search</button>
+    </form>
+    <nav class="filter-list" aria-label="Categories">
+      <a href="{{ url_for('public.announcements',q=q) }}" {% if not cat %}aria-current="page"{% endif %}>All categories</a>
+      {% for category in cats %}<a href="{{ url_for('public.announcements',cat=category,q=q) }}" {% if cat==category %}aria-current="page"{% endif %}>{{ category }}</a>{% endfor %}
+    </nav>
+    {% if q or cat %}<a class="reset-link" href="{{ url_for('public.announcements') }}">Clear search and filters</a>{% endif %}
+  </aside>
+  <div class="results"><p class="muted result-count" role="status">{{ count }} announcement{{ '' if count==1 else 's' }}{% if q %} matching “{{ q }}”{% endif %}{% if cat %} in {{ cat }}{% endif %}</p>
+    {% for post in posts %}{{ post_card(post,attachments) }}{% else %}<div class="panel empty-state"><h2>{{ 'No matching announcements' if q or cat else 'No announcements yet' }}</h2><p>{{ 'Try another search or clear the filters.' if q or cat else 'New school notices will appear here.' }}</p>{% if q or cat %}<a href="{{ url_for('public.announcements') }}">Show all announcements</a>{% endif %}</div>{% endfor %}
+    {{ pager(pg,pages) }}
+  </div>
+</div>
+{% endblock %}

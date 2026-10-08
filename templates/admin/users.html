@@ -1,0 +1,7 @@
+{% extends 'admin/base.html' %}
+{% from 'macros.html' import csrf with context %}
+{% block workspace %}<div class="workspace-grid"><section class="panel"><h2>Staff accounts</h2>{% for member in users %}<article class="list-row"><div><h3>{{ member.username }}</h3><p class="muted">{{ member.role }}{% if member.id==user.id %} · Your account{% endif %}</p></div>{% if member.id!=user.id %}<a class="button secondary danger" href="{{ url_for('staff.delete',kind='user',i=member.id) }}">Remove<span class="sr-only"> {{ member.username }}</span></a>{% endif %}</article>{% endfor %}</section>
+<section class="panel"><h2>Add a staff account</h2><form class="form-stack" method="post" action="{{ url_for('staff.add_user') }}">{{ csrf() }}
+<div><label for="new-username">Username</label><input id="new-username" name="username" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="60" pattern="[a-zA-Z0-9._-]+" required aria-describedby="username-help"><p class="field-help" id="username-help">Letters, numbers, dots, underscores and hyphens.</p></div>
+<div><label for="initial-password">Initial password</label><input id="initial-password" type="password" name="password" autocomplete="new-password" minlength="8" required></div>
+<div><label for="new-role">Publishing role</label><select id="new-role" name="role"><option value="editor">Editor — announcements and uploads</option><option value="admin">Administrator — also accounts and backups</option></select></div><button>Add account</button></form></section></div>{% endblock %}

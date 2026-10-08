@@ -1,0 +1,4 @@
+{% extends 'admin/base.html' %}
+{% from 'macros.html' import csrf with context %}
+{% block workspace %}<div class="workspace-grid"><section class="panel"><h2>Magazine names</h2>{% for magazine in magazines %}<form class="rename-form" method="post" action="{{ url_for('staff.magazine') }}">{{ csrf() }}<input type="hidden" name="id" value="{{ magazine.id }}"><label for="magazine-{{ magazine.id }}">Magazine {{ loop.index }}</label><div class="search-row"><input id="magazine-{{ magazine.id }}" name="name" value="{{ magazine.name }}" maxlength="60" dir="auto" required><button>Rename</button></div></form>{% endfor %}</section>
+<section class="panel"><h2>Add a magazine</h2><form class="form-stack" method="post" action="{{ url_for('staff.magazine') }}">{{ csrf() }}<div><label for="new-magazine">Magazine name</label><input id="new-magazine" name="name" maxlength="60" dir="auto" required></div><button>Add magazine</button></form></section></div>{% endblock %}
