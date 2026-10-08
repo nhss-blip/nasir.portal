@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Services</title>
+<link rel="preload" as="image" href="images/logo.webp">
+<style>
+:root{--bg:#dfe7e1;--ink:#17261f;--accent:#2f5bff;--serif:"Iowan Old Style",Palatino,Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",sans-serif;--cw:clamp(170px,17vw,300px)}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg) url(images/background.jpg) center / cover fixed no-repeat;color:var(--ink);font-family:var(--sans);overflow-x:hidden}
+
+.group{position:relative;height:260vh}
+.stage{position:sticky;top:0;height:100vh;overflow:hidden}
+.cards{position:absolute;inset:0}
+
+.card{position:absolute;left:50%;top:var(--top);width:var(--cw);aspect-ratio:4/3;border-radius:18px;overflow:hidden;color:#fff;text-decoration:none;background:var(--g);box-shadow:0 10px 30px rgba(23,38,31,.25);will-change:transform}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.card:hover img{transform:scale(1.06)}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6),transparent 55%)}
+.label{position:absolute;left:1rem;bottom:.8rem;z-index:1;font-family:var(--serif);font-size:1.35rem;line-height:1.1}
+.label small{display:block;font-family:var(--sans);font-size:.8rem;opacity:.85;margin-top:.2rem}
+.card:focus-visible{outline:4px solid var(--accent);outline-offset:3px}
+.new-badge{position:absolute;top:.8rem;right:.8rem;z-index:1;padding:.2rem .6rem;border-radius:999px;background:#dcb865;color:#1b1226;font:700 .7rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+
+.center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,46vw);display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center;z-index:5;pointer-events:none}
+.center>*{pointer-events:auto}
+.logo{display:block;height:clamp(240px,45vh,470px);width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,.25));transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.center.lifted .logo{transform:translateY(calc(var(--lift,0px) * -1))}
+.dock{position:relative;width:100%;display:flex;flex-direction:column;align-items:center}
+.dock .headline{position:absolute;left:50%;bottom:calc(100% + 14px);transform:translateX(-50%);white-space:nowrap}
+.headline{color:#dcb865;font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,2.4vw,2.3rem);line-height:1.1;letter-spacing:-.02em}
+.word{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em}
+.inner{display:inline-block;transform:translateY(105%);transition:transform 1s cubic-bezier(.2,.7,.2,1) calc(.25s + var(--i)*.1s)}
+.headline.reveal .inner{transform:none}
+
+.search{width:100%;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.bar{width:100%;display:flex;align-items:center;gap:.2rem;height:44px;padding:0 .5rem 0 .3rem;background:#fff;border:1px solid transparent;border-radius:22px;box-shadow:0 1px 6px rgba(32,33,36,.28);transition:box-shadow .2s}
+.bar:hover,.bar:focus-within{box-shadow:0 2px 12px rgba(32,33,36,.38)}
+.bar:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.bar input{flex:1;min-width:0;height:100%;border:0;background:transparent;font:inherit;font-size:1rem;color:#202124;outline:none;padding:0 .4rem}
+.bar input::placeholder{color:#80868b}
+.ib{width:34px;height:34px;flex:none;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;cursor:pointer;color:#5f6368;text-decoration:none}
+.ib[hidden]{display:none}
+.ib:hover{background:#f1f3f4}
+.ib svg{width:20px;height:20px;fill:currentColor}
+.ai{flex:none;height:34px;padding:0 .95rem;margin-left:.2rem;border:0;border-radius:17px;background:#f1f3f4;color:#202124;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer}
+.ai:hover{background:#e8eaed}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem}
+.chip{padding:.55rem 1.1rem;border:1px solid #dadce0;border-radius:999px;background:#fff;color:#3c4043;font:inherit;font-size:.9rem;cursor:pointer}
+.chip:hover{background:#f8f9fa}
+.ib:focus-visible,.ai:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:1100px){.lens{display:none}}
+
+/* search suggestions */
+.bar{position:relative}
+.bar.open{border-radius:22px 22px 0 0;outline:none}
+.sug{position:absolute;left:-1px;right:-1px;top:100%;margin:0;padding:4px 0 8px;list-style:none;background:#fff;border-radius:0 0 22px 22px;box-shadow:0 4px 10px rgba(32,33,36,.3);z-index:20;overflow:hidden}
+.sug::before{content:"";display:block;height:1px;background:#e8eaed;margin:0 16px 4px}
+.sug li{display:flex;align-items:center;gap:.9rem;height:38px;margin:0 8px;padding:0 .8rem;border-radius:19px;color:#202124;font-size:1rem;text-align:left;cursor:pointer}
+.sug li.on,.sug li:hover{background:#e8eaed}
+.sug svg{width:18px;height:18px;flex:none;fill:#5f6368}
+.sug span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sug b{font-weight:600}
+
+/* info button and dialog */
+.info-btn{position:fixed;top:14px;right:14px;z-index:50;width:44px;height:44px;padding:7px;border:1.5px solid rgba(220,184,101,.75);border-radius:50%;background:rgba(24,18,32,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.4);transition:transform .2s,border-color .2s}
+.info-btn:hover{transform:scale(1.08);border-color:#dcb865}
+.info-btn img{display:block;width:100%;height:100%;object-fit:contain}
+.info-btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+dialog{margin:auto;width:min(520px,90vw);padding:0;border:1px solid rgba(220,184,101,.55);border-radius:18px;background:rgba(24,18,32,.7);color:#f1e9d6;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(0,0,0,.35)}
+.info-body{position:relative;padding:1.8rem 2rem 2rem}
+.info-body h2{font-family:var(--serif);font-weight:400;font-size:1.7rem;color:#dcb865;margin-bottom:.8rem;padding-right:2rem}
+.info-body p{font-size:1rem;line-height:1.6}
+.info-close{position:absolute;top:.8rem;right:1rem;width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:#f1e9d6;font-size:1.6rem;line-height:1;cursor:pointer}
+.info-close:hover{background:rgba(255,255,255,.14)}
+.info-close:focus-visible{outline:2px solid #dcb865;outline-offset:2px}
+
+/* phones and reduced motion: plain layout, no scroll animation */
+body.flat .group{height:auto;padding:10vh 5vw}
+body.flat .stage{position:static;height:auto;overflow:visible;display:flex;flex-direction:column}
+body.flat .center{order:-1}
+body.flat .center{position:static;transform:none;width:min(560px,100%);margin:0 auto 6vh}
+body.flat .cards{position:static;display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+body.flat .card{position:static;width:auto;transform:none!important}
+body.flat .inner{transition:none}
+body.flat .logo{height:190px;transform:none!important}
+body.flat .dock .headline{position:static;transform:none;white-space:normal;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<main id="main"></main>
+
+<button class="info-btn" id="infoBtn" aria-label="Information about services"><img src="images/info.webp" alt=""></button>
+<dialog id="infoDialog" aria-labelledby="infoTitle">
+  <div class="info-body">
+    <form method="dialog"><button class="info-close" aria-label="Close">&times;</button></form>
+    <h2 id="infoTitle">Information about services</h2>
+    <p>Nextcloud for students Username=students Password=students</p>
+  </div>
+</dialog>
+
+<script>
+// EDIT THIS LIST: name, address, image file, short note.
+// Put your images in an "images" folder next to this file. 2 services per row, 6 per screen.
+const services = [
+  { name: "Magazines",     url: "/magazines",  img: "images/magazines.jpg",    note: "School magazines" },
+  { name: "School Announcements", url: "/announcements",  img: "images/school announcements.jpg",      note: "See whats new " },
+  { name: "Al-islam",      url: "https://qc.4everproxy.com/direct/aHR0cHM6Ly93d3cuYWxpc2xhbS5vcmcv",        img: "images/al-islam.jpg",     note: "Official Ahmadiyya website" },
+  { name: "Al-Hakam",  url: "https://www.alhakam.org/",  img: "images/al-hakam.jpg", note: "Ahmadiyya Islamic newspaper." },
+  { name: "ERP",       url: "http://192.168.88.21:8000",  img: "images/ERP.jpg",      note: "School management software" },
+  { name: "Next Cloud",       url: "http://192.168.88.23",  img: "images/nextcloud.avif",      note: "Pictures and Notes" }
+];
+
+// Your logo: put the file in the "images" folder. The cards fly out from behind it.
+// Set to "" if you don't want a logo.
+const logo = "images/logo.webp";
+
+const mq = matchMedia("(max-width:767px), (prefers-reduced-motion: reduce)");
+const clamp = n => Math.min(1, Math.max(0, n));
+const ease = t => t * t * (3 - 2 * t);
+const endX = [34, 38, 33];   // how far (vw) each row's cards travel from the centre
+const endR = [8, 4, 10];     // final tilt (deg) for each row
+const groups = [];
+
+function words(el, text) {
+  text.split(" ").forEach((w, i) => {
+    const o = document.createElement("span"); o.className = "word";
+    const n = document.createElement("span"); n.className = "inner";
+    n.style.setProperty("--i", i); n.textContent = w;
+    o.append(n); el.append(o, " ");
+  });
+}
+
+const svg = d => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
+const ICON = {
+  search: svg("M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"),
+  mic: svg("M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"),
+  cam: svg("M12 8.8a3.2 3.2 0 100 6.4 3.2 3.2 0 000-6.4zM9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z")
+};
+
+for (let g = 0; g < services.length; g += 6) {
+  const list = services.slice(g, g + 6);
+  const group = document.createElement("section"); group.className = "group";
+  const stage = document.createElement("div"); stage.className = "stage";
+  const cards = document.createElement("div"); cards.className = "cards";
+  const center = document.createElement("div"); center.className = "center";
+  const head = document.createElement("h2"); head.className = "headline";
+  words(head, g === 0 ? "Search or open a service" : "More services");
+  let origin = head;   // the cards start hidden behind this element
+  if (g === 0) {
+    if (logo) {
+      const lg = document.createElement("img");
+      lg.className = "logo"; lg.src = logo; lg.alt = "Logo";
+      lg.onerror = () => lg.remove();
+      center.append(lg);
+      origin = lg;
+    }
+    // the search bar sits right under the logo; the heading appears above it later
+    const dock = document.createElement("div"); dock.className = "dock";
+    dock.append(head);
+    dock.insertAdjacentHTML("beforeend",
+      '<form class="search" action="https://www.google.com/search" method="get">' +
+      '<div class="bar">' +
+      '<button class="ib" type="submit" aria-label="Search">' + ICON.search + '</button>' +
+      '<input type="search" name="q" placeholder="Search Google" aria-label="Search Google" autocomplete="off" autofocus>' +
+      '<button class="ib mic" type="button" aria-label="Search by voice" hidden>' + ICON.mic + '</button>' +
+      '<a class="ib lens" href="https://lens.google.com/" aria-label="Search with Google Lens">' + ICON.cam + '</a>' +
+      '<button class="ai" type="submit" name="udm" value="50">AI Mode</button>' +
+      '</div></form>');
+    center.append(dock);
+  } else {
+    center.append(head);
+  }
+
+  const rows = Math.ceil(list.length / 2);
+  const tops = { 1: [50], 2: [32, 68], 3: [22, 50, 78] }[rows];
+  const rec = { el: group, stage, center, head, origin, cards: [] };
+
+  list.forEach((s, i) => {
+    const row = i >> 1, side = i % 2 ? 1 : -1;
+    const a = document.createElement("a");
+    a.className = "card"; a.href = s.url; a.dataset.url = s.url;
+    a.style.setProperty("--top", tops[row] + "%");
+    a.style.setProperty("--g", `linear-gradient(135deg,hsl(${((g + i) * 67 + 200) % 360} 45% 32%),hsl(${((g + i) * 67 + 250) % 360} 50% 18%))`);
+    const img = document.createElement("img");
+    img.src = s.img; img.alt = ""; img.loading = "lazy";
+    img.onerror = () => img.remove();
+    const label = document.createElement("span"); label.className = "label";
+    label.textContent = s.name;
+    if (s.note) { const sm = document.createElement("small"); sm.textContent = s.note; label.append(sm); }
+    a.append(img, label);
+    cards.append(a);
+    rec.cards.push({ a, row, side, top: tops[row] });
+  });
+
+  stage.append(cards, center); group.append(stage);
+  document.getElementById("main").append(group);
+  groups.push(rec);
+}
+
+// NEW badges: asks the server whether there is fresh content (works when served by app.py)
+fetch("/api/new", { cache: "no-store" }).then(r => r.json()).then(fresh => {
+  document.querySelectorAll(".card").forEach(a => {
+    if (!fresh[a.dataset.url]) return;
+    const b = document.createElement("span");
+    b.className = "new-badge"; b.textContent = "New";
+    a.append(b);
+  });
+}).catch(() => {});
+
+// Info dialog: opens from the top-right icon, closes with x, Esc or a click outside
+const dlg = document.getElementById("infoDialog");
+document.getElementById("infoBtn").onclick = () => dlg.showModal();
+dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+
+// Search suggestions. Uses Google's unofficial suggest service, loaded with a <script>
+// tag (JSONP) because browsers block a normal fetch() to it. If it can't load,
+// the list simply doesn't appear and searching still works.
+(() => {
+  const form = document.querySelector(".search");
+  if (!form) return;
+  const bar = form.querySelector(".bar"), input = form.elements.q;
+  const list = document.createElement("ul");
+  list.className = "sug"; list.id = "sug"; list.hidden = true;
+  list.setAttribute("role", "listbox");
+  bar.append(list);
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-controls", "sug");
+  input.setAttribute("aria-expanded", "false");
+
+  let items = [], idx = -1, typed = "", reqId = 0, timer;
+
+  function close() {
+    list.hidden = true; bar.classList.remove("open");
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+    idx = -1;
+  }
+  function mark(i) {
+    idx = i;
+    [...list.children].forEach((li, k) => li.classList.toggle("on", k === i));
+    if (i >= 0) input.setAttribute("aria-activedescendant", "sug" + i);
+    else input.removeAttribute("aria-activedescendant");
+  }
+  function render(arr) {
+    // show as many rows as fit between the bar and the bottom of the screen
+    const room = document.body.classList.contains("flat") ? 6
+      : Math.floor((innerHeight - bar.getBoundingClientRect().bottom - 27) / 38);
+    items = arr.slice(0, Math.max(3, Math.min(8, room)));
+    list.replaceChildren();
+    if (!items.length) return close();
+    items.forEach((s, k) => {
+      const li = document.createElement("li");
+      li.id = "sug" + k; li.setAttribute("role", "option");
+      li.insertAdjacentHTML("beforeend", ICON.search);
+      const t = document.createElement("span"), b = document.createElement("b");
+      if (s.toLowerCase().startsWith(typed.toLowerCase())) {
+        t.append(s.slice(0, typed.length));      // what you typed: normal weight
+        b.textContent = s.slice(typed.length);   // the rest: bold, like Google
+        t.append(b);
+      } else { b.textContent = s; t.append(b); }
+      li.append(t);
+      li.onmousedown = e => e.preventDefault();  // keep focus in the input
+      li.onclick = () => { input.value = s; form.requestSubmit(); };
+      list.append(li);
+    });
+    list.hidden = false; bar.classList.add("open");
+    input.setAttribute("aria-expanded", "true");
+    mark(-1);
+  }
+  function fetchSuggest(q) {
+    const id = ++reqId, cb = "__sg" + id, sc = document.createElement("script");
+    const done = () => { delete window[cb]; sc.remove(); };
+    window[cb] = d => {
+      done();
+      if (id === reqId) render(Array.isArray(d) && Array.isArray(d[1]) ? d[1] : []);
+    };
+    sc.onerror = done;
+    sc.src = "https://suggestqueries.google.com/complete/search?client=firefox&q=" +
+             encodeURIComponent(q) + "&callback=" + cb;
+    document.head.append(sc);
+  }
+
+  input.addEventListener("input", () => {
+    typed = input.value; clearTimeout(timer);
+    const q = typed.trim();
+    if (!q) { reqId++; return close(); }
+    timer = setTimeout(() => fetchSuggest(q), 120);
+  });
+  input.addEventListener("keydown", e => {
+    if (list.hidden) {
+      if (e.key === "ArrowDown" && input.value.trim()) { typed = input.value; fetchSuggest(input.value.trim()); }
+      return;
+    }
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      let i = idx + (e.key === "ArrowDown" ? 1 : -1);
+      if (i >= items.length) i = -1;
+      if (i < -1) i = items.length - 1;
+      mark(i);
+      input.value = i >= 0 ? items[i] : typed;
+    } else if (e.key === "Escape") {
+      input.value = typed; close();
+    }
+  });
+  form.addEventListener("submit", close);
+  document.addEventListener("click", e => { if (!form.contains(e.target)) close(); });
+})();
+
+// Voice search: only shown where the browser allows it (needs https or localhost)
+const mic = document.querySelector(".mic");
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (mic && SR && isSecureContext) {
+  mic.hidden = false;
+  mic.onclick = () => {
+    const r = new SR();
+    r.onresult = e => {
+      const f = mic.closest("form");
+      f.elements.q.value = e.results[0][0].transcript;
+      f.requestSubmit();
+    };
+    r.start();
+  };
+}
+
+function update() {
+  const flat = mq.matches, vw = innerWidth, vh = innerHeight;
+  document.body.classList.toggle("flat", flat);
+  groups.forEach(G => {
+    if (flat) {
+      G.head.classList.toggle("reveal", G.head.getBoundingClientRect().top < vh * 0.85);
+      G.cards.forEach(c => c.a.style.transform = "");
+      G.center.classList.remove("lifted");
+      return;
+    }
+    const r = G.el.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > vh) return;
+    const p = clamp(-r.top / (r.height - vh));   // 0 to 1 across the sticky scroll
+    const e = ease(clamp(p / 0.55));             // cards finish moving at 55%
+    // where the cards start: the centre of the logo (or the heading if there is no logo)
+    const sr = G.stage.getBoundingClientRect();
+    // offsetTop ignores the logo's slide-up, so the cards always start from the same spot
+    const cr = G.center.getBoundingClientRect();
+    const o = G.origin.isConnected ? G.origin : null;
+    const oy = (o ? cr.top + o.offsetTop + o.offsetHeight / 2 : cr.top + cr.height / 2) - sr.top;
+    const lift = G.head.offsetHeight + 12;       // how far the logo glides up to make room
+    if (G.lift !== lift) { G.lift = lift; G.center.style.setProperty("--lift", lift + "px"); }
+    G.cards.forEach(c => {
+      const k = c.row % 3;
+      const x = c.side * endX[k] * e * vw / 100;
+      const y = (oy - c.top / 100 * sr.height) * (1 - e);
+      const rot = c.side * (3 + (endR[k] - 3) * e);
+      const s = 0.45 + 0.55 * e;   // small enough to hide behind the logo at first
+      c.a.style.transform = `translate(-50%,-50%) translate(${x}px,${y}px) rotate(${rot}deg) scale(${s})`;
+    });
+    G.head.classList.toggle("reveal", p > 0.4);
+    G.center.classList.toggle("lifted", p > 0.4);
+  });
+}
+
+let queued = false;
+function schedule() {
+  if (queued) return;
+  queued = true;
+  requestAnimationFrame(() => { queued = false; update(); });
+}
+addEventListener("scroll", schedule, { passive: true });
+addEventListener("resize", schedule);
+update();
+</script>
+</body>
+</html>
